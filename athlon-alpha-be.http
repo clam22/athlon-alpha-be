@@ -1,6 +1,0 @@
-@athlon_alpha_be_HostAddress = http://localhost:5015
-
-GET {{athlon_alpha_be_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
