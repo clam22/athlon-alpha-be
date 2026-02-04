@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solution Items/" />
+  <Project Path="athlon-alpha-be.api/athlon-alpha-be.api.csproj" />
+  <Project Path="athlon-alpha-be.database/athlon-alpha-be.database.csproj" />
+  <Project Path="athlon-alpha-be.tests/athlon-alpha-be.tests.csproj" />
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+</Solution>

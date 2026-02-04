@@ -1,0 +1,45 @@
+services:
+  athlon-alpha-be.api:
+    image: ${DOCKER_REGISTRY}-athlonalphabeapi
+    container_name: athlon-api
+    build:
+      context: .
+      dockerfile: athlon-alpha-be.api/Dockerfile
+    environment:
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+      - ConnectionStrings__DatabaseConnection=Host=${DB_HOST};Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};;
+      - ConnectionStrings__RedisConnection=athlon-alpha-be.redis:${REDIS_PORT}
+    ports:
+        - "5000:5000"
+    depends_on:
+        - athlon-alpha-be.database
+        - athlon-alpha-be.redis
+    
+  athlon-alpha-be.database:
+    image: postgres:17
+    container_name: athlon-database
+    environment:
+        POSTGRES_DB: ${POSTGRES_DB}
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+        - "${POSTGRES_PORT}:5432"
+    volumes:
+        - postgres_data:/var/lib/postgresql/data
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready -U admin -d athlon"]
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 5
+
+  athlon-alpha-be.redis:
+    image: redis:7
+    container_name: athlon-redis
+    ports:
+      - "${REDIS_HOST}:${REDIS_PORT}" 
+ 
+volumes:
+  postgres_data:
+
+
+
