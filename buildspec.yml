@@ -1,0 +1,19 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION |
+        docker login --username AWS --password-stdin $REPOSITORY_URI
+
+  build:
+    commands:
+      - docker build -t athlon.api -f athlon-alpha-be.api/Dockerfile .
+      - docker tag athlon-alpha-api:latest $REPOSITORY_URI:latest
+
+  post_build:
+    commands:
+      - docker push $REPOSITORY_URI:latest
+
+artifacts:
+  files: '**/*'
