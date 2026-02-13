@@ -14,6 +14,7 @@ phases:
   post_build:
     commands:
       - docker push $REPOSITORY_URI:latest
+      - printf '[{"name":"api","imageUri":"%s"}]' $REPOSITORY_URI:latest > imagedefinitions.json
 
 artifacts:
   files: '**/*'
