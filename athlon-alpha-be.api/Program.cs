@@ -32,6 +32,8 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+Console.WriteLine("Testing");
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
