@@ -9,6 +9,8 @@ DotEnv.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.AddJsonConsole();
+
 // Add services to the container.
 
 builder.Services.AddControllers();
