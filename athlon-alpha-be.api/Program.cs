@@ -12,17 +12,22 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddConsole();
 builder.Logging.AddJsonConsole();
 
-// Add services to the container.
+builder.Services.AddHealthChecks()
+    .AddNpgSql(
+        connectionString: builder.Configuration.GetConnectionString("DatabaseConnection")!,
+        name: "PostgreSQL")
+    .AddRedis(redisConnectionString: builder.Configuration.GetConnectionString("RedisConnection")!,
+        name: "Redis");
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DatabaseConnection")!));
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(
     ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")!));
-
+ 
 
 builder.Services.AddOpenApi();
 
