@@ -5,7 +5,7 @@ using Scalar.AspNetCore;
 using StackExchange.Redis;
 
 //Load the .env file
-DotEnv.Load();
+//DotEnv.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,8 +36,6 @@ if (app.Environment.IsDevelopment())
 }
 
 Console.WriteLine("Testing");
-
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
