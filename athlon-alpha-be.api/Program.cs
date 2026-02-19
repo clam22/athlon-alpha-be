@@ -12,11 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddConsole();
 builder.Logging.AddJsonConsole();
 
+
 builder.Services.AddHealthChecks()
     .AddNpgSql(
         connectionString: builder.Configuration.GetConnectionString("DatabaseConnection")!,
         name: "PostgreSQL")
-    .AddRedis(redisConnectionString: builder.Configuration.GetConnectionString("RedisConnection")!,
+    .AddRedis(
+        redisConnectionString: builder.Configuration.GetConnectionString("RedisConnection")!,
         name: "Redis");
 
 builder.Services.AddControllers();

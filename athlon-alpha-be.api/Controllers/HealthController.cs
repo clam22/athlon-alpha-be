@@ -4,20 +4,14 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 namespace athlon_alpha_be.api.Controllers;
 
 [ApiController]
-[Route("health")]
-public class HealthController : ControllerBase
+[Route("[controller]")]
+public class HealthController(HealthCheckService health) : ControllerBase
 {
-    private readonly HealthCheckService _health;
 
-    public HealthController(HealthCheckService health)
-    {
-        _health = health;
-    }
-
-    [HttpGet]
+    [HttpGet("/health")]
     public async Task<IActionResult> Get()
     {
-        var report = await _health.CheckHealthAsync();
+        var report = await health.CheckHealthAsync();
 
         if (report.Status == HealthStatus.Healthy)
             return Ok("Healthy");
