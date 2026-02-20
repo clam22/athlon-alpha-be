@@ -1,0 +1,20 @@
+version: 0.2
+
+phases: 
+  install:
+    commands:
+      - echo "Installing .NET 10 SDK..."
+      - curl -sSL https://dot.net | bash /dev/stdin --version 10.0
+      - export PATH="$PATH:$HOME/.dotnet"
+    
+      - echo "Install EF Core..."
+      - dotnet tool install --global dotnet-ef
+  build:  
+    commands:
+    - echo "Restoring and Building..."
+    - cd athlon-alpha-be.database
+    - dotnet restore
+    - dotnet build --configuration Release --no-restore
+    
+    - echo "Running Migrations..."
+    - dotnet ef database update --verbose
