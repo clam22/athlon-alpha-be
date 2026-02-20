@@ -4,9 +4,9 @@ phases:
   install:
     commands:
       - echo "Installing .NET 10 SDK..."
-      - curl -sSL https://dot.net -o dotnet-install.sh
+      - curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh
       - chmod +x dotnet-install.sh
-      - ./dotnet-install.sh --channel 10.0
+      - ./dotnet-install.sh --channel 10.0 --install-dir $HOME/.dotnet
       
       - echo "Setting Environment Variables..."
       - export DOTNET_ROOT=$HOME/.dotnet
