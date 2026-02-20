@@ -4,17 +4,27 @@ phases:
   install:
     commands:
       - echo "Installing .NET 10 SDK..."
-      - curl -sSL https://dot.net | bash /dev/stdin --version 10.0
-      - export PATH="$PATH:$HOME/.dotnet"
+      - curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh
+      - chmod +x dotnet-install.sh
+      - ./dotnet-install.sh --channel 10.0
+      
+      - echo "Setting Environment Paths..."
+      - export DOTNET_ROOT=$HOME/.dotnet
+      - export PATH=$PATH:$HOME/.dotnet:$HOME/.dotnet/tools
     
-      - echo "Install EF Core..."
+      - echo "Installing EF Core Global Tool..."
       - dotnet tool install --global dotnet-ef
+
   build:  
     commands:
-    - echo "Restoring and Building..."
-    - cd athlon-alpha-be.database
-    - dotnet restore
-    - dotnet build --configuration Release --no-restore
+      - echo "Verifying Environment..."
+      - dotnet --version
+      - dotnet ef --version
     
-    - echo "Running Migrations..."
-    - dotnet ef database update --verbose
+      - echo "Building Database Project..."
+      - cd athlon-alpha-be.database
+      - dotnet restore
+      - dotnet build --configuration Release --no-restore
+    
+      - echo "Applying Database Migrations..."
+      - dotnet ef database update --verbose
