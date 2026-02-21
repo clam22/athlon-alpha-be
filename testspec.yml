@@ -9,16 +9,16 @@ phases:
       - ./dotnet-install.sh --channel 10.0 --install-dir $HOME/.dotnet
     
       - echo "Setting environment..."
-      - dotnet new globaljson --sdk-version 10.0 --force
       - export DOTNET_ROOT=$HOME/.dotnet
       - export PATH=$HOME/.dotnet:$HOME/.dotnet/tools:$PATH
       - export DOTNET_MULTILEVEL_LOOKUP=0
+      - dotnet new globaljson --sdk-version 10.0 --force
+      - dotnet --list-sdks
       - dotnet --version
 
   build:
     commands:
       - echo "Setting environment..."
-      - dotnet new globaljson --sdk-version 10.0 --force
       - export DOTNET_ROOT=$HOME/.dotnet
       - export PATH=$HOME/.dotnet:$HOME/.dotnet/tools:$PATH
       - export DOTNET_MULTILEVEL_LOOKUP=0
