@@ -10,14 +10,17 @@ phases:
     
       - echo "Setting environment..."
       - export DOTNET_ROOT=$HOME/.dotnet
-      - export PATH=$PATH:$HOME/.dotnet:$HOME/.dotnet/tools
+      - export PATH=$HOME/.dotnet:$HOME/.dotnet/tools:$PATH
+      - export DOTNET_MULTILEVEL_LOOKUP=0
+      - dotnet --list-sdks
       - dotnet --version
 
   build:
     commands:
       - echo "Setting environment..."
       - export DOTNET_ROOT=$HOME/.dotnet
-      - export PATH=$PATH:$HOME/.dotnet:$HOME/.dotnet/tools
+      - export PATH=$HOME/.dotnet:$HOME/.dotnet/tools:$PATH
+      - export DOTNET_MULTILEVEL_LOOKUP=0
       - dotnet --info
       
       - echo "Restoring and Building Tests..."
@@ -31,5 +34,5 @@ phases:
 reports:
   dotnet-test-reports:
     files:
-      - 'athlon-alpha-be.tests/TestResults/results.trx'
+      - '**/results.trx'
     file-format: 'VisualStudioTrx'
