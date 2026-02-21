@@ -1,5 +1,10 @@
 version: 0.2
 
+env:
+  variables:
+    DOTNET_ROOT: "/root/.dotnet"
+    PATH: "/root/.dotnet:/root/.dotnet/tools:$PATH"
+
 phases:
   install:
     commands:
@@ -7,19 +12,15 @@ phases:
       - curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh
       - chmod +x dotnet-install.sh
       - ./dotnet-install.sh --channel 10.0 --install-dir $HOME/.dotnet
-      
-      - echo "Setting Environment Variables..."
-      - export DOTNET_ROOT=$HOME/.dotnet
-      - export PATH=$PATH:$HOME/.dotnet:$HOME/.dotnet/tools
 
   build:
     commands:
       - echo "Verifying Environment..."
-      - dotnet --version
+      - dotnet --info
       
       - echo "Restoring and Building Tests..."
       - cd athlon-alpha-be.tests
-      - dotnet restore
+      - dotnet restore --verbosity normal
       - dotnet build --configuration Release --no-restore
       
       - echo "Running xUnit Tests..."
