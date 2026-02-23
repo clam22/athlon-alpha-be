@@ -1,14 +1,11 @@
-﻿using athlon_alpha_be.database.Models;
+using athlon_alpha_be.database.Models;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace athlon_alpha_be.database.Persistence;
 
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-
-    }
 
     public DbSet<User> Users => Set<User>();
 

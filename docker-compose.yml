@@ -7,13 +7,23 @@ services:
       dockerfile: athlon-alpha-be.api/Dockerfile
     environment:
       - ASPNETCORE_URLS=${ASPNETCORE_URLS}
-      - ConnectionStrings__DatabaseConnection=Host=${DB_HOST};Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};;
+      - ConnectionStrings__DatabaseConnection=Host=${DB_HOST};Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};
       - ConnectionStrings__RedisConnection=athlon-alpha-be.redis:${REDIS_PORT}
+      - Cognito__UserPoolId=${Cognito__UserPoolId}
+      - Cognito__ClientId=${Cognito__ClientId}
+      - Cognito__ClientSecret=${Cognito__ClientSecret}
+      - Cognito__Region=${Cognito__Region}
+      - AWS_PROFILE=default
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${Cognito__Region}
     ports:
         - "5000:5000"
     depends_on:
         - athlon-alpha-be.database
         - athlon-alpha-be.redis
+    volumes:
+      - ~/.aws:/root/.aws
     
   athlon-alpha-be.database:
     image: postgres:17

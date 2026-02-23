@@ -1,9 +1,7 @@
-﻿using athlon_alpha_be.database.Models;
+using athlon_alpha_be.database.Models;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace athlon_alpha_be.database.Persistence.Configurations;
 
