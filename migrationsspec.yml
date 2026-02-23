@@ -21,13 +21,15 @@ phases:
 
   build:  
     commands:
-      - echo "Verifying Environment..."
-      - dotnet --version
-      - dotnet ef --version
+      - echo "Setting Environment..."
+      - export DOTNET_ROOT=$HOME/.dotnet
+      - export PATH=$HOME/.dotnet:$HOME/.dotnet/tools:$PATH
+      - export DOTNET_MULTILEVEL_LOOKUP=0
+      - dotnet --info
     
       - echo "Building Database Project..."
       - cd athlon-alpha-be.database
-      - dotnet restore
+      - dotnet restore --verbosity normal
       - dotnet build --configuration Release --no-restore
     
       - echo "Applying Database Migrations..."

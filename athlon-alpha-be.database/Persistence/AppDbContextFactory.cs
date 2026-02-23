@@ -1,4 +1,5 @@
-﻿using dotenv.net;
+using dotenv.net;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -14,16 +15,16 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 
         if (File.Exists(envPath))
         {
-            DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { envPath }));
+            DotEnv.Load(options: new DotEnvOptions(envFilePaths: [envPath]));
         }
 
         var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DatabaseConnection");
 
-    
+
         if (string.IsNullOrEmpty(connectionString))
         {
             var apiPath = Path.Combine(root, "athlon-alpha-be.api");
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(apiPath)
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddJsonFile("appsettings.Development.json", optional: true)
@@ -41,7 +42,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
             );
         }
 
-        var options = new DbContextOptionsBuilder<AppDbContext>()
+        DbContextOptions<AppDbContext> options = new DbContextOptionsBuilder<AppDbContext>()
             .UseNpgsql(connectionString)
             .Options;
 
