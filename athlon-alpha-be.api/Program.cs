@@ -1,9 +1,16 @@
+using athlon_alpha_be.api.Configuration;
 using athlon_alpha_be.api.Middleware;
+using athlon_alpha_be.api.Services;
 using athlon_alpha_be.database.Persistence;
 
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 using Scalar.AspNetCore;
+
+using Serilog;
+
 
 using Serilog;
 
@@ -15,15 +22,17 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
+    DotNetEnv.Env.Load();
+
     WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+    builder.Configuration.AddEnvironmentVariables();
 
     builder.Host.UseSerilog((context, loggerConfiguration) =>
     {
         loggerConfiguration.WriteTo.Console();
         loggerConfiguration.ReadFrom.Configuration(context.Configuration);
     });
-
-    builder.Configuration.AddEnvironmentVariables();
 
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
@@ -37,6 +46,13 @@ try
         };
     });
 
+    builder.Services.AddHealthChecks()
+        .AddNpgSql(
+            connectionString: builder.Configuration.GetConnectionString("DatabaseConnection")!,
+            name: "PostgreSQL")
+        .AddRedis(
+            redisConnectionString: builder.Configuration.GetConnectionString("RedisConnection")!,
+            name: "Redis");
     builder.Services.AddHealthChecks()
         .AddNpgSql(
             connectionString: builder.Configuration.GetConnectionString("DatabaseConnection")!,
@@ -59,23 +75,50 @@ try
         });
     });
 
+    builder.Services.Configure<CognitoSettings>(builder.Configuration.GetSection("Cognito"));
+
+    builder.Services.AddScoped<ICognitoService, CognitoService>();
+    builder.Services.AddScoped<IUserService, UserService>();
+
+    builder.Services.AddAuthentication("Bearer")
+        .AddJwtBearer("Bearer", options =>
+        {
+            var cognito = builder.Configuration.GetSection("Cognito");
+            options.Authority = $"https://cognito-idp.{cognito["Region"]}.amazonaws.com/{cognito["UserPoolId"]}";
+
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidAudience = cognito["ClientId"],
+                ValidateLifetime = true,
+                RoleClaimType = "cognito:groups"
+            };
+        });
+
+    builder.Services.AddAuthorization();
+
     builder.Services.AddControllers();
 
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("DatabaseConnection")!));
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DatabaseConnection")!));
 
-    builder.Services.AddSingleton<IConnectionMultiplexer>(
-        ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")!));
+    builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+    {
+        string connection = builder.Configuration.GetConnectionString("RedisConnection")!;
+        return ConnectionMultiplexer.Connect(connection);
+    });
 
+    builder.Services.AddOpenApi();
     builder.Services.AddOpenApi();
 
     WebApplication app = builder.Build();
+    WebApplication app = builder.Build();
 
     app.UseExceptionHandler();
-    app.UseMiddleware<GlobalExceptionHandler>();
-    app.UseHttpsRedirection();
-    app.UseStatusCodePages();
-    app.UseRouting();
+    //app.UseHttpsRedirection();
     app.UseCors();
     app.UseAuthentication();
     app.UseAuthorization();
@@ -98,7 +141,6 @@ finally
     Log.CloseAndFlush();
 }
 
-//Load the .env file
-//DotEnv.Load();
+
 
 

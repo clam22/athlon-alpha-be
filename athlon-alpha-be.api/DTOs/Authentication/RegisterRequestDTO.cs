@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace athlon_alpha_be.api.DTOs.User;
+namespace athlon_alpha_be.api.DTOs.Authentication;
 
-public record CreateUserRequestDTO
+public record RegisterRequestDTO
 {
     [Required]
     public string Name { get; set; } = string.Empty;
@@ -11,8 +11,10 @@ public record CreateUserRequestDTO
     public string Surname { get; set; } = string.Empty;
 
     [Required]
+    [EmailAddress]
     public string Email { get; set; } = string.Empty;
 
     [Required]
-    public string CognitoSub { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+
 }
