@@ -3,10 +3,14 @@ using athlon_alpha_be.api.Middleware;
 using athlon_alpha_be.api.Services;
 using athlon_alpha_be.database.Persistence;
 
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using Scalar.AspNetCore;
+
+using Serilog;
+
 
 using Serilog;
 
@@ -42,6 +46,13 @@ try
         };
     });
 
+    builder.Services.AddHealthChecks()
+        .AddNpgSql(
+            connectionString: builder.Configuration.GetConnectionString("DatabaseConnection")!,
+            name: "PostgreSQL")
+        .AddRedis(
+            redisConnectionString: builder.Configuration.GetConnectionString("RedisConnection")!,
+            name: "Redis");
     builder.Services.AddHealthChecks()
         .AddNpgSql(
             connectionString: builder.Configuration.GetConnectionString("DatabaseConnection")!,
@@ -91,6 +102,8 @@ try
 
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("DatabaseConnection")!));
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DatabaseConnection")!));
 
     builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     {
@@ -99,7 +112,9 @@ try
     });
 
     builder.Services.AddOpenApi();
+    builder.Services.AddOpenApi();
 
+    WebApplication app = builder.Build();
     WebApplication app = builder.Build();
 
     app.UseExceptionHandler();
