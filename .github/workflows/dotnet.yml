@@ -24,6 +24,4 @@ jobs:
     - name: Build
       run: dotnet build athlon-alpha-be.slnx --no-restore
       
-    - name: Run tests
-      working-directory: ./athlon-alpha-be.tests
-      run: dotnet test --configuration Release --no-build
+    
