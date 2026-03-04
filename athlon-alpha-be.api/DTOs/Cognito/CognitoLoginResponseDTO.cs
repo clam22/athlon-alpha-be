@@ -1,4 +1,4 @@
-namespace athlon_alpha_be.api.DTOs.Authentication;
+namespace athlon_alpha_be.api.DTOs.Cognito;
 
 public record CognitoLoginResponseDTO
 {
@@ -7,4 +7,5 @@ public record CognitoLoginResponseDTO
     public string IdToken { get; set; } = string.Empty;
     public string TokenType { get; set; } = string.Empty;
     public int? ExpiresIn { get; set; }
+    public string Session { get; set; } = string.Empty;
 }

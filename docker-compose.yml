@@ -1,6 +1,6 @@
 services:
   athlon-alpha-be.api:
-    image: ${DOCKER_REGISTRY}-athlonalphabeapi
+    image: athlonalphabeapi
     container_name: athlon-api
     build:
       context: .
@@ -18,10 +18,10 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=${Cognito__Region}
     ports:
-        - "5000:5000"
+      - "5000:5000"
     depends_on:
-        - athlon-alpha-be.database
-        - athlon-alpha-be.redis
+      - athlon-alpha-be.database
+      - athlon-alpha-be.redis
     volumes:
       - ~/.aws:/root/.aws
     
