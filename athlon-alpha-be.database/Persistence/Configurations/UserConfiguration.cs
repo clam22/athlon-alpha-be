@@ -5,31 +5,19 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace athlon_alpha_be.database.Persistence.Configurations;
 
-public class UserConfiguration : IEntityTypeConfiguration<User>
+public class UserConfiguration : BaseModelConfiguration<User>
 {
-    public void Configure(EntityTypeBuilder<User> builder)
+    public override void Configure (EntityTypeBuilder<User> builder)
     {
-        builder.ToTable("User");
+        base.Configure (builder);
 
-        builder.HasKey(m => m.Id);
+        builder.ToTable("Users");
 
-        builder.Property(m => m.Name)
+        builder.Property(u => u.CognitoSub)
             .IsRequired()
             .HasMaxLength(255);
 
-        builder.Property(m => m.Email)
-            .IsRequired()
-            .HasMaxLength(255);
-
-        builder.Property(m => m.Created)
-            .IsRequired()
-            .ValueGeneratedOnAdd();
-
-        builder.Property(m => m.LastModified)
-            .IsRequired()
-            .ValueGeneratedOnUpdate();
-
-        builder.HasIndex(m => m.Email);
+        builder.HasIndex(u => u.CognitoSub)
+            .IsUnique();
     }
-
 }

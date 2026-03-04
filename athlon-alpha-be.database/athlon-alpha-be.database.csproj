@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Cache\" />
+    <Folder Include="Persistence\Seedings\" />
   </ItemGroup>
 
 </Project>

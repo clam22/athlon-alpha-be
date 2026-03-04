@@ -1,16 +1,20 @@
 using athlon_alpha_be.api.Configuration;
+using athlon_alpha_be.api.DTOs.Authentication;
+using athlon_alpha_be.api.DTOs.Cognito;
+using athlon_alpha_be.api.DTOs.User;
 using athlon_alpha_be.api.Middleware;
 using athlon_alpha_be.api.Services;
+using athlon_alpha_be.api.Validators.Authentication;
+using athlon_alpha_be.api.Validators.Cognito;
+using athlon_alpha_be.api.Validators.User;
 using athlon_alpha_be.database.Persistence;
 
+using FluentValidation;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using Scalar.AspNetCore;
-
-using Serilog;
-
 
 using Serilog;
 
@@ -53,13 +57,6 @@ try
         .AddRedis(
             redisConnectionString: builder.Configuration.GetConnectionString("RedisConnection")!,
             name: "Redis");
-    builder.Services.AddHealthChecks()
-        .AddNpgSql(
-            connectionString: builder.Configuration.GetConnectionString("DatabaseConnection")!,
-            name: "PostgreSQL")
-        .AddRedis(
-            redisConnectionString: builder.Configuration.GetConnectionString("RedisConnection")!,
-            name: "Redis");
 
     builder.Services.AddCors(options =>
     {
@@ -77,13 +74,24 @@ try
 
     builder.Services.Configure<CognitoSettings>(builder.Configuration.GetSection("Cognito"));
 
+    //Validators
+    builder.Services.AddScoped<IValidator<LoginRequestDTO>, LoginRequestValidator>();
+    builder.Services.AddScoped<IValidator<RegisterRequestDTO>, RegisterRequestValidator>();
+    builder.Services.AddScoped<IValidator<ConfirmUserRequestDTO>, ConfirmUserRequestValidator>();
+    builder.Services.AddScoped<IValidator<CognitoConfirmUserRequestDTO>, CognitoConfirmUserRequestValidator>();
+    builder.Services.AddScoped<IValidator<CognitoLoginRequestDTO>, CognitoLoginRequestValidator>();
+    builder.Services.AddScoped<IValidator<CognitoRegisterRequestDTO>, CognitoRegisterRequestValidator>();
+    builder.Services.AddScoped<IValidator<CreateUserRequestDTO>, CreateUserRequestValidator>();
+    builder.Services.AddScoped<IValidator<UpdateUserRequestDTO>, UpdateUserRequestValidator>();
+
+    //Services
     builder.Services.AddScoped<ICognitoService, CognitoService>();
     builder.Services.AddScoped<IUserService, UserService>();
 
     builder.Services.AddAuthentication("Bearer")
         .AddJwtBearer("Bearer", options =>
         {
-            var cognito = builder.Configuration.GetSection("Cognito");
+            IConfigurationSection cognito = builder.Configuration.GetSection("Cognito");
             options.Authority = $"https://cognito-idp.{cognito["Region"]}.amazonaws.com/{cognito["UserPoolId"]}";
 
             options.TokenValidationParameters = new TokenValidationParameters
@@ -102,8 +110,6 @@ try
 
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("DatabaseConnection")!));
-    builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseNpgsql(builder.Configuration.GetConnectionString("DatabaseConnection")!));
 
     builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     {
@@ -112,9 +118,7 @@ try
     });
 
     builder.Services.AddOpenApi();
-    builder.Services.AddOpenApi();
 
-    WebApplication app = builder.Build();
     WebApplication app = builder.Build();
 
     app.UseExceptionHandler();

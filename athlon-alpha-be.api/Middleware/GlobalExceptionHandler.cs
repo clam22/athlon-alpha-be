@@ -31,14 +31,14 @@ public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> _logg
         {
             Status = status,
             Title = title,
-            //Type = exception.GetType().Name,
+            Type = exception.GetType().Name,
             Detail = httpContext.RequestServices
                                  .GetRequiredService<IHostEnvironment>()
                                  .IsDevelopment()
                      ? exception.Message
                      : null,
             Instance = httpContext.Request.Path,
-            Type = $"https://httpstatuses.com/{status}"
+            //Type = $"https://httpstatuses.com/{status}"
         };
 
         problem.Extensions["traceId"] = httpContext.TraceIdentifier;
