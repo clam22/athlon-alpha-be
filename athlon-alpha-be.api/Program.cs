@@ -72,8 +72,6 @@ try
         });
     });
 
-    builder.Services.Configure<CognitoSettings>(builder.Configuration.GetSection("Cognito"));
-
     //Validators
     builder.Services.AddScoped<IValidator<LoginRequestDTO>, LoginRequestValidator>();
     builder.Services.AddScoped<IValidator<RegisterRequestDTO>, RegisterRequestValidator>();
@@ -87,6 +85,8 @@ try
     //Services
     builder.Services.AddScoped<ICognitoService, CognitoService>();
     builder.Services.AddScoped<IUserService, UserService>();
+
+    builder.Services.Configure<CognitoSettings>(builder.Configuration.GetSection("Cognito"));
 
     builder.Services.AddAuthentication("Bearer")
         .AddJwtBearer("Bearer", options =>

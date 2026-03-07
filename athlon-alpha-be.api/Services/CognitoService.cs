@@ -1,10 +1,13 @@
 using System.Security.Cryptography;
 using System.Text;
+
 using Amazon;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
+
 using athlon_alpha_be.api.Configuration;
 using athlon_alpha_be.api.DTOs.Cognito;
+
 using Microsoft.Extensions.Options;
 
 namespace athlon_alpha_be.api.Services;

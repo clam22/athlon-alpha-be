@@ -1,5 +1,6 @@
-using FluentValidation;
 using athlon_alpha_be.api.DTOs.Authentication;
+
+using FluentValidation;
 
 namespace athlon_alpha_be.api.Validators.Authentication;
 

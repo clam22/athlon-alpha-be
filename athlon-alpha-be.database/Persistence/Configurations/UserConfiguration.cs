@@ -7,9 +7,9 @@ namespace athlon_alpha_be.database.Persistence.Configurations;
 
 public class UserConfiguration : BaseModelConfiguration<User>
 {
-    public override void Configure (EntityTypeBuilder<User> builder)
+    public override void Configure(EntityTypeBuilder<User> builder)
     {
-        base.Configure (builder);
+        base.Configure(builder);
 
         builder.ToTable("Users");
 
