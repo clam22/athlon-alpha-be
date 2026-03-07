@@ -17,6 +17,8 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=${Cognito__Region}
+      - Frontend__Url=${Frontend__Url}
+
     ports:
       - "5000:5000"
     depends_on:

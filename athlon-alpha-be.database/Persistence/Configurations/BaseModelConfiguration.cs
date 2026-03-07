@@ -18,5 +18,5 @@ public class BaseModelConfiguration<T> : IEntityTypeConfiguration<T> where T : B
         builder.Property(m => m.LastModified)
             .IsRequired()
             .ValueGeneratedOnUpdate();
-    }   
+    }
 }

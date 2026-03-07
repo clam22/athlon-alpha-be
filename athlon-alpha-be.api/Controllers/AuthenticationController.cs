@@ -1,12 +1,14 @@
+using System.IdentityModel.Tokens.Jwt;
+
 using athlon_alpha_be.api.DTOs.Authentication;
-using athlon_alpha_be.api.DTOs.User;
 using athlon_alpha_be.api.DTOs.Cognito;
+using athlon_alpha_be.api.DTOs.User;
 using athlon_alpha_be.api.Services;
-using Microsoft.AspNetCore.Mvc;
+
 using FluentValidation;
 using FluentValidation.Results;
 
-using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Mvc;
 
 namespace athlon_alpha_be.api.Controllers;
 
@@ -51,7 +53,7 @@ public class AuthenticationController(
         {
             Console.WriteLine($"Claim Type: {claim.Key}, Claim Value: {claim.Value}");
         }
-       
+
         return Ok(new LoginResponseDTO
         {
             CognitoId = claims["sub"],
@@ -104,13 +106,13 @@ public class AuthenticationController(
                 _logger.LogWarning("Initiating compensating action. Deleting Cognito user for email {Email}.", registerRequest.Email);
                 await _cognitoService.DeleteUserAsync(registerRequest.Email);
             }
-            
+
             throw;
         }
     }
 
     [HttpPost("confirm-signup")]
-    public async Task <ActionResult> ConfirmUserAsync([FromBody] ConfirmUserRequestDTO confirmUserRequest)
+    public async Task<ActionResult> ConfirmUserAsync([FromBody] ConfirmUserRequestDTO confirmUserRequest)
     {
         await _cognitoService.ConfirmUserAsync(new CognitoConfirmUserRequestDTO
         {
@@ -129,8 +131,8 @@ public class AuthenticationController(
         var options = new CookieOptions
         {
             HttpOnly = true,
-            Secure = isProduction, 
-            SameSite = SameSiteMode.Lax, 
+            Secure = isProduction,
+            SameSite = SameSiteMode.Lax,
             Expires = DateTime.UtcNow.AddMinutes(60)
         };
 

@@ -2,6 +2,7 @@ using athlon_alpha_be.api.DTOs.User;
 using athlon_alpha_be.api.Exceptions;
 using athlon_alpha_be.database.Models;
 using athlon_alpha_be.database.Persistence;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace athlon_alpha_be.api.Services;
@@ -57,7 +58,7 @@ public class UserService(AppDbContext _appDbContext, ILogger<UserService> _logge
             Id = user.Id,
             CognitoSub = user.CognitoSub,
             Created = user.Created,
-            LastModified= user.LastModified
+            LastModified = user.LastModified
         };
     }
 
