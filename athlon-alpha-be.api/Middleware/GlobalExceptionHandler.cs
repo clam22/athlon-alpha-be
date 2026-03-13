@@ -36,13 +36,8 @@ public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> _logg
                                  .GetRequiredService<IHostEnvironment>()
                                  .IsDevelopment()
                      ? exception.Message
-                     : null,
-            Instance = httpContext.Request.Path,
-            //Type = $"https://httpstatuses.com/{status}"
+                     : null
         };
-
-        problem.Extensions["traceId"] = httpContext.TraceIdentifier;
-        problem.Extensions["timestamp"] = DateTime.UtcNow;
 
         httpContext.Response.StatusCode = status;
 

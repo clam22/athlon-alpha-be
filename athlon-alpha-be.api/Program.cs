@@ -1,12 +1,8 @@
 using athlon_alpha_be.api.Configuration;
 using athlon_alpha_be.api.DTOs.Authentication;
-using athlon_alpha_be.api.DTOs.Cognito;
-using athlon_alpha_be.api.DTOs.User;
 using athlon_alpha_be.api.Middleware;
 using athlon_alpha_be.api.Services;
 using athlon_alpha_be.api.Validators.Authentication;
-using athlon_alpha_be.api.Validators.Cognito;
-using athlon_alpha_be.api.Validators.User;
 using athlon_alpha_be.database.Persistence;
 
 using FluentValidation;
@@ -76,15 +72,11 @@ try
     builder.Services.AddScoped<IValidator<LoginRequestDTO>, LoginRequestValidator>();
     builder.Services.AddScoped<IValidator<RegisterRequestDTO>, RegisterRequestValidator>();
     builder.Services.AddScoped<IValidator<ConfirmUserRequestDTO>, ConfirmUserRequestValidator>();
-    builder.Services.AddScoped<IValidator<CognitoConfirmUserRequestDTO>, CognitoConfirmUserRequestValidator>();
-    builder.Services.AddScoped<IValidator<CognitoLoginRequestDTO>, CognitoLoginRequestValidator>();
-    builder.Services.AddScoped<IValidator<CognitoRegisterRequestDTO>, CognitoRegisterRequestValidator>();
-    builder.Services.AddScoped<IValidator<CreateUserRequestDTO>, CreateUserRequestValidator>();
-    builder.Services.AddScoped<IValidator<UpdateUserRequestDTO>, UpdateUserRequestValidator>();
 
     //Services
     builder.Services.AddScoped<ICognitoService, CognitoService>();
     builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddSingleton<IRedisService, RedisService>();
 
     builder.Services.Configure<CognitoSettings>(builder.Configuration.GetSection("Cognito"));
 
