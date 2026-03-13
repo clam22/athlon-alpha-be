@@ -19,7 +19,8 @@ public class AuthenticationController(
     IUserService _userService,
     ILogger<AuthenticationController> _logger,
     IValidator<LoginRequestDTO> _loginRequestValidator,
-    IValidator<RegisterRequestDTO> _registerRequestValidator
+    IValidator<RegisterRequestDTO> _registerRequestValidator,
+    IRedisService _redis
     ) : ControllerBase
 {
     [HttpPost("signin")]
@@ -33,34 +34,33 @@ public class AuthenticationController(
             return BadRequest("Invalid login request");
         }
 
-        CognitoLoginResponseDTO? result = await _cognitoService.LoginUserAsync(new CognitoLoginRequestDTO
+        CognitoLoginResponseDTO? cognitoLoginResponse = await _cognitoService.LoginUserAsync(new CognitoLoginRequestDTO
         {
             Email = loginRequest.Email,
             Password = loginRequest.Password
         });
 
-        if (result == null)
+        if (cognitoLoginResponse is null)
         {
             _logger.LogWarning("Authentication failed for email {Email}. Invalid credentials.", loginRequest.Email);
             return Unauthorized("Invalid credentials");
         }
 
-        SetTokenCookies(result.AccessToken, result.RefreshToken, result.IdToken);
+        SetTokenCookies(cognitoLoginResponse.AccessToken, cognitoLoginResponse.RefreshToken, cognitoLoginResponse.IdToken);
 
-        Dictionary<string, string> claims = ReadJwtClaims(result.IdToken);
+        Dictionary<string, string> claims = ReadJwtClaims(cognitoLoginResponse.IdToken);
 
-        foreach (var claim in claims)
-        {
-            Console.WriteLine($"Claim Type: {claim.Key}, Claim Value: {claim.Value}");
-        }
-
-        return Ok(new LoginResponseDTO
+        LoginResponseDTO loginResponse = new LoginResponseDTO
         {
             CognitoId = claims["sub"],
             Email = claims["email"],
             Name = claims["given_name"],
             Surname = claims["family_name"]
-        });
+        };
+
+        await _redis.SetAsync($"cognito:{loginResponse.CognitoId}", loginResponse, TimeSpan.FromMinutes(10));
+
+        return Ok(loginResponse);
     }
 
     [HttpPost("signup")]
@@ -75,7 +75,6 @@ public class AuthenticationController(
         }
 
         CognitoRegisterResponseDTO? cognitoRegisterResponse = null;
-
         try
         {
             cognitoRegisterResponse = await _cognitoService.RegisterUserAsync(new CognitoRegisterRequestDTO

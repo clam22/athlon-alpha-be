@@ -1,3 +1,4 @@
+
 using System.Security.Cryptography;
 using System.Text;
 
@@ -16,11 +17,13 @@ public class CognitoService : ICognitoService
 {
     private readonly AmazonCognitoIdentityProviderClient _client;
     private readonly CognitoSettings _settings;
+    private readonly ILogger<CognitoService> _logger;
 
-    public CognitoService(IOptions<CognitoSettings> settings)
+    public CognitoService(IOptions<CognitoSettings> settings, ILogger<CognitoService> logger)
     {
         _settings = settings.Value;
         _client = new AmazonCognitoIdentityProviderClient(RegionEndpoint.GetBySystemName(_settings.Region));
+        _logger = logger;
     }
     public async Task<CognitoLoginResponseDTO?> LoginUserAsync(CognitoLoginRequestDTO loginRequest)
     {
@@ -36,6 +39,7 @@ public class CognitoService : ICognitoService
             }
         });
 
+        _logger.LogInformation("Cognito login successful for user: {Email}", loginRequest.Email);
         return new CognitoLoginResponseDTO
         {
             AccessToken = response.AuthenticationResult.AccessToken,
@@ -74,6 +78,8 @@ public class CognitoService : ICognitoService
             ]
         });
 
+        _logger.LogInformation("Cognito registration successful for user: {Email}", registerRequest.Email);
+
         await _client.AdminAddUserToGroupAsync(new AdminAddUserToGroupRequest
         {
             UserPoolId = _settings.UserPoolId,
@@ -107,6 +113,8 @@ public class CognitoService : ICognitoService
             ConfirmationCode = cognitoConfirmUserRequest.ConfirmationCode,
             SecretHash = CalculateSecretHash(cognitoConfirmUserRequest.Email)
         });
+
+        _logger.LogInformation("Cognito user confirmation successful for user: {Email}", cognitoConfirmUserRequest.Email);
     }
 
     public async Task<CognitoGetUserResponseDTO> GetUserAsync(string accessToken)

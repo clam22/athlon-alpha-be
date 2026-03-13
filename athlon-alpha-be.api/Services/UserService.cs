@@ -13,6 +13,7 @@ public class UserService(AppDbContext _appDbContext, ILogger<UserService> _logge
     {
         if (await _appDbContext.Users.AsNoTracking().AnyAsync(u => u.CognitoSub == createUserRequest.CognitoSub))
         {
+            _logger.LogWarning("Attempt to create user with existing CognitoSub: {CognitoSub}", createUserRequest.CognitoSub);
             throw new ConflictException("User already exists");
         }
 
@@ -37,16 +38,18 @@ public class UserService(AppDbContext _appDbContext, ILogger<UserService> _logge
 
     public async Task<IEnumerable<UserResponseDTO>> GetUsersAsync()
     {
-        return await _appDbContext.Users
-            .AsNoTracking()
-            .Select(user => new UserResponseDTO
-            {
-                Id = user.Id,
-                CognitoSub = user.CognitoSub,
-                Created = user.Created,
-                LastModified = user.LastModified,
-            })
-            .ToListAsync();
+        IEnumerable<UserResponseDTO> users = await _appDbContext.Users
+           .AsNoTracking()
+           .Select(user => new UserResponseDTO
+           {
+               Id = user.Id,
+               CognitoSub = user.CognitoSub,
+               Created = user.Created,
+               LastModified = user.LastModified,
+           })
+           .ToListAsync();
+        _logger.LogInformation("Retrieved all users successfully. Total count: {Count}", users.Count());
+        return users;
     }
 
     public async Task<UserResponseDTO> GetUserByIdAsync(Guid id)
